@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using Leap.Unity;
 using Leap;
 
 
@@ -32,27 +33,23 @@ public class ShootingFingers : MonoBehaviour
 		gameController = GameObject.Find ("GameController").GetComponent<GameController>();
 		this.elementSwitchDelay = 1f;
 
-		controller = new Controller ();
+        controller = new Controller();
 
 		fireDelay = this.startFireDelay;
 		this.attackChanged = true;
 
 		// Gesture 
-		controller.EnableGesture (Gesture.GestureType.TYPESCREENTAP);
+        /*
+		controller.EnableGesture(Gesture.GestureType.TYPESCREENTAP);
+
 
 		controller.EnableGesture(Gesture.GestureType.TYPE_KEY_TAP);
 
-		//controller.EnableGesture(Gesture.GestureType.TYPE_CIRCLE);
+
 
 		controller.EnableGesture(Gesture.GestureType.TYPE_SWIPE);
-		/*controller.Config.SetFloat("Gesture.ScreenTap.MinForwardVelocity", 1.0f);
-		controller.Config.SetFloat("Gesture.ScreenTap.HistorySeconds", 1.1f);
-		controller.Config.SetFloat("Gesture.ScreenTap.MinDistance", 0.05f);
-		controller.Config.Save();*/
-
+        */
 		this.handModel = GetComponent<HandModel> ();
-		//this.spawnElement (0);
-
 	}
 	
 	// Update is called once per frame
@@ -80,15 +77,7 @@ public class ShootingFingers : MonoBehaviour
 
 		this.fireDelay = fireDelay - Time.deltaTime;
 		this.elementSwitchDelay = this.elementSwitchDelay - Time.deltaTime;
-		//Debug.Log ("Bla: " + Bone.BoneType.TYPE_DISTAL);
 
-		/*
-		//Leap::Vector vec = new Vector;
-		Leap.Finger finger = handModel.fingers[1];
-
-		Bone bone;
-	
-		bone = finger.Bone (Bone.BoneType.TYPE_DISTA*/
 
 		Vector3 shootDirection = handModel.fingers [1].GetBoneDirection (3);
 
@@ -98,30 +87,23 @@ public class ShootingFingers : MonoBehaviour
 
 		Debug.DrawRay (fingerOrigin, shootDirection);
 
-		/*if (this.attackChanged) 
-		{
-			currentElement = (GameObject)Instantiate (this.Elements[0], handModel.EffectPosition.position, Quaternion.identity);
-			currentElement.transform.localScale = currentElement.transform.localScale * 0.1f;
-			currentElement.GetComponent<SphereCollider>().enabled = false;
-			this.attackChanged = false;
-		}*/
-
+        /*TODO
 		if (currentElement != null) {
 			currentElement.transform.position = handModel.EffectPosition.position;
 		}
+        */
 
+        /*CHECK
 		if (frame.Gestures ().Count > 0)
-			Debug.Log ("Detected " + frame.Gestures ().Count);
+        {
+            Debug.Log ("Detected " + frame.Gestures ().Count);
+        }
+			
 		//Gesture
 		foreach (Gesture gesture in frame.Gestures()) 
 		{
 			Debug.Log ("Gesture");
 			
-			/*
-			if(gesture.Type == Gesture.GestureType.TYPE_CIRCLE && gesture.State.Equals(Gesture.GestureState.STATE_STOP))
-			{
-				Debug.Log("Gesture.Type.TYPE_CIRCLE");
-			} */
 
 			// Spawn Element
 			if (gesture.Type == Gesture.GestureType.TYPE_SWIPE) 
@@ -179,6 +161,7 @@ public class ShootingFingers : MonoBehaviour
 
 			}
 		}
+        */
 
 		if (!this.GetComponent<AudioSource> ().isPlaying && this.loadingShoot) 
 		{
@@ -195,7 +178,7 @@ public class ShootingFingers : MonoBehaviour
 
 	private void spawnElement(int elementIndex)
 	{
-		this.currentElement = (GameObject)Instantiate (this.Elements[elementIndex], handModel.EffectPosition.position, Quaternion.identity);
+		//TODOthis.currentElement = (GameObject)Instantiate (this.Elements[elementIndex], handModel.EffectPosition.position, Quaternion.identity);
 		this.currentElement.transform.localScale = this.currentElement.transform.localScale * 0.01f;
 		this.currentElement.GetComponent<SphereCollider>().enabled = false;
 		this.attackChanged = false;
