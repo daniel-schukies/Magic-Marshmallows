@@ -70,9 +70,6 @@ public class AIEnemyShoot : MonoBehaviour
 				elementIndex = elementIndex == 0 ? 1 : 0;
 				this.spawnElement (elementIndex);
 				
-				Debug.Log ("Switch Element");
-				
-				Debug.Log ("elementSwitchDelay" + this.elementSwitchDelay);
 			}
 
 			this.switchElement = false;
@@ -135,10 +132,6 @@ public class AIEnemyShoot : MonoBehaviour
 		this.currentElement.transform.localScale = this.currentElement.transform.localScale * 0.1f;
 		this.currentElement.GetComponent<SphereCollider>().enabled = false;
 		//this.attackChanged = false;
-		
-
-		Debug.Log("Spawn");
-		
 	}
 
 	private void AnimationEventShoot()
@@ -146,6 +139,5 @@ public class AIEnemyShoot : MonoBehaviour
 		Vector3 shootDirection = this.player.transform.position - this.leftHandFinger.transform.position;
 		this.shootElement(shootDirection);
 		this.switchElement = true;
-		Debug.Log ("Shoot!!!!");
 	}
 }
