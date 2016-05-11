@@ -32,14 +32,12 @@ public class ShootingFingers : MonoBehaviour
 
     private bool HandActive;
 
-
+    public int GestureAcceleration = 1100;
     public GameObject SpawnPoint;
 
     // Use this for initialization
     void Start()
     {
-        Debug.Log("start");
-        //Elements = new GameObject[1];
         gameController = GameObject.Find("GameController").GetComponent<GameController>();
         this.elementSwitchDelay = 0f;
 
@@ -48,22 +46,8 @@ public class ShootingFingers : MonoBehaviour
         fireDelay = this.startFireDelay;
         this.attackChanged = true;
 
-
         CurrentHand = null;
         IsHandActive = false;
-
-        // Gesture 
-        /*
-        controller.EnableGesture(Gesture.GestureType.TYPESCREENTAP);
-
-
-        controller.EnableGesture(Gesture.GestureType.TYPE_KEY_TAP);
-
-
-
-        controller.EnableGesture(Gesture.GestureType.TYPE_SWIPE);
-        */
-        //this.handModel = GetComponent<HandModel> ();
     }
 
     // Update is called once per frame
@@ -72,8 +56,9 @@ public class ShootingFingers : MonoBehaviour
         bool ActiveGesture = false;
 
         // Gesture
+        //
         Frame frame = controller.Frame();
-
+        
         if (frame.Hands.Count > 0)
         {
             var hands = frame.Hands;
@@ -85,80 +70,62 @@ public class ShootingFingers : MonoBehaviour
             return;
         }
 
-
+        // ------------ Check Gesture ------------
         for (int i = 0; i < frame.Hands.Count; i++ )
         {
-            if(frame.Hands[0].PalmVelocity.Magnitude > 1000)
+            if (frame.Hands[0].PalmVelocity.Magnitude > GestureAcceleration)
             {
                 ActiveGesture = true;
 
-                if(!IsHandActive)
-                {
-                    CurrentHand = frame.Hands[0];
-                    IsHandActive = true;
-                    
-                }
-                Debug.Log("Hand Nr." + i + "PalmVelocity: " + frame.Hands[0].PalmVelocity.Magnitude);
+                // if(!IsHandActive)
+                CurrentHand = this.GetComponent<LeapServiceProvider>().CurrentFrame.Hands[0];
+                IsHandActive = true;
             }
         }
 
+        // ------------ Check Hand ------------
         if(frame.Hands.Count <= 0)
         {
             this.CurrentHand = null;
         }
 
-            //Hand leapHand = handModel.GetLeapHand ();
-            //if(leapHand != null) Debug.Log ("Position: " + handModel.EffectPosition.position);
-        /*
-            if (!this.isActiveAndEnabled)
-            {
-                //Destroy(currentSmallBall);
-                //return;
-                //this.fireDelay = 3;
 
-                if (this.currentElement == null)
-                {
-                    this.spawnElement(0);
-                }
+        // ------------ Check SpawnPoint ------------
+        if(this.currentElement != null)
+        {
+            if(this.SpawnPoint == null)
+            {
+               this.currentElement.SetActive(false);
             }
             else
             {
-               // this.fireDelay = 900f;
+                this.currentElement.SetActive(true);
             }
-        */
+        }
+  
+
+
+        // ------------ Delay ------------
         this.fireDelay = fireDelay - Time.deltaTime;
         this.elementSwitchDelay = this.elementSwitchDelay - Time.deltaTime;
 
-        // handModel.Fingers.;
 
-        //Vector3 shootDirection = handModel.fingers[1].GetBoneDirection(3);
-        if(CurrentHand != null)
+
+
+        // ------------ Move Element  ------------
+        if (currentElement != null && SpawnPoint != null)
         {
-            Vector3 shootDirection = GetIndexFinger(CurrentHand).Direction.ToVector3();
-        }
-        
-
-        //	Vector3 fingerOrigin = handModel.fingers [1].GetRay ().origin;// handModel.GetPalmPosition ();	//handModel.fingers [1].GetRay ().origin;
-
-        //	Debug.DrawRay (fingerOrigin, shootDirection);
-
-
-        if (currentElement != null)
-        {
-            currentElement.transform.position = GetIndexFinger(CurrentHand).TipPosition.ToVector3();
+            currentElement.transform.position = SpawnPoint.transform.position;
+            Debug.Log("Spawn Point: " + SpawnPoint.transform.position );
+            Debug.Log("Current Element: " + currentElement.transform.position );
         }
 
 
-        // if(frame.Hands[0].PalmVelocity.Magnitude > 0)
+
+
+        if (ActiveGesture && ( this.CurrentHand != null ) && SpawnPoint != null )
         {
-            //Debug.Log("Log: " + frame.Hands[0].PalmVelocity.Magnitude);
-            // Debug.Log("Log: " + frame.Hands[1].PalmVelocity.Magnitude);
-        }
-
-
-        if (ActiveGesture && ( this.CurrentHand != null ) )
-        {
-
+            // ------------ Intro ------------
             Debug.Log("enter Gesture");
             if( gameController.isInIntroState() )
             {
@@ -167,23 +134,24 @@ public class ShootingFingers : MonoBehaviour
                return;
             }
 
+            // ------------ Shoot Delay ------------
+            if (this.currentElement != null && !this.loadingShoot)
+            {
+                this.GetComponent<AudioSource>().Play();
+                this.loadingShoot = true;
+
+                Debug.Log("Play Audio Shoot");
+            }
+            // ------------ END Shoot Delay ------------
 
 
+            // ------------ Switch Element ------------
             if (this.elementSwitchDelay <= 0f)
             {
-                if (this.currentElement != null && !this.loadingShoot)
-                {
-                    this.GetComponent<AudioSource>().Play();
-                    this.loadingShoot = true;
-                    //this.shootElement(shootDirection);
 
-                    Debug.Log("Play Audio Shoot");
-                }
 
-                Debug.Log("if (this.elementSwitchDelay <= 0f)");
                 if (this.currentElement == null)
                 {
-                    Debug.Log("if (this.currentElement == null)");
                     this.spawnElement(0);
                 }
                 else
@@ -194,13 +162,7 @@ public class ShootingFingers : MonoBehaviour
                     this.spawnElement(elementIndex);
 
                     Debug.Log("Switch Element");
-
-                    Debug.Log("elementSwitchDelay" + this.elementSwitchDelay);
                 }
-
-
-
-
 
                 this.elementSwitchDelay = 5f;
             }
@@ -208,107 +170,33 @@ public class ShootingFingers : MonoBehaviour
             {
                 Debug.Log("Switch blocked");
             }
+            // ------------ END Switch Element ------------
 
         }
 
-
+        // ------------ Shoot ------------
         if (!this.GetComponent<AudioSource>().isPlaying && this.loadingShoot)
         {
-            //this.shootElement(shootDirection);
-            this.loadingShoot = false;
+            if (CurrentHand != null)
+            {
+                Vector3 shootDirection = GetIndexFinger(CurrentHand).Direction.ToVector3();
+
+                Debug.Log("SHOOT");
+                this.shootElement(this.SpawnPoint.transform.forward);
+                this.loadingShoot = false;
+            }
         }
 
         if (fireDelay < 0.0f && currentElement != null)
         {
-            //this.shootElement(shootDirection);
+           //this.shootElement(shootDirection);
            // Debug.Log("shoot");
-
-            
         }
-
-        /*CHECK
-        if (frame.Gestures ().Count > 0)
-        {
-            Debug.Log ("Detected " + frame.Gestures ().Count);
-        }
-			
-        //Gesture
-        foreach (Gesture gesture in frame.Gestures()) 
-        {
-            Debug.Log ("Gesture");
-			
-
-            // Spawn Element
-            if (gesture.Type == Gesture.GestureType.TYPE_SWIPE) 
-            {
-                Debug.Log ("TYPE_SWIPE Gesture");
-
-
-
-                if (this.elementSwitchDelay <= 0f) 
-                {
-                    if (this.currentElement == null) 
-                    {
-                        this.spawnElement (0);
-                    } 
-                    else 
-                    {
-
-                        Destroy (this.currentElement);
-                        elementIndex = elementIndex == 0 ? 1 : 0;
-                        this.spawnElement (elementIndex);
-
-                        Debug.Log ("Switch Element");
-
-                        Debug.Log ("elementSwitchDelay" + this.elementSwitchDelay);
-                    }
-
-
-                    if(this.currentElement != null && !this.loadingShoot)
-                    {
-                        this.GetComponent<AudioSource>().Play();
-                        this.loadingShoot = true;
-                        //this.shootElement(shootDirection);
-                    }
-
-                    if (gesture.State.Equals (Gesture.GestureState.STATE_STOP)) 
-                    {
-                        Debug.Log ("TYPE_SWIPE Gesture STOP ------------>");
-                        //this.elementSwitchDelay = 0f;
-
-                    }
-
-                    this.elementSwitchDelay = 1f;
-                } 
-                else 
-                {
-                    Debug.Log ("Switch blocked");
-                }
-            }
-
-            if(gesture.Type == Gesture.GestureType.TYPE_KEY_TAP || gesture.Type == Gesture.GestureType.TYPESCREENTAP)
-            {
-
-            }
-        }
-        */
-        /*
-        if (!this.GetComponent<AudioSource> ().isPlaying && this.loadingShoot) 
-        {
-            //this.shootElement(shootDirection);
-            this.loadingShoot = false;
-        }
-
-        if (fireDelay < 0.0f && currentElement != null) 
-        {
-            //this.shootElement(shootDirection);
-        }
-        */
     }
 
     private void spawnElement(int elementIndex)
     {
-        Debug.Log("spawnElement(int elementIndex)");
+        Debug.Log("spawnElement function");
         if (this.Elements.Length <= 0)
         {
             Debug.Log("element index: " + elementIndex + "Length: " + this.Elements.Length);
@@ -316,16 +204,16 @@ public class ShootingFingers : MonoBehaviour
         else
         {
 
-
-            this.currentElement = (GameObject)Instantiate(this.Elements[elementIndex], GetIndexFinger(CurrentHand).Bone(Bone.BoneType.TYPE_DISTAL).NextJoint.ToVector3(), Quaternion.identity);
-
+            this.Elements[elementIndex].transform.localScale = this.Elements[elementIndex].transform.localScale * 0.01f;
+            this.currentElement = (GameObject)Instantiate(this.Elements[elementIndex], SpawnPoint.transform.position, Quaternion.identity);
+            this.Elements[elementIndex].transform.localScale = this.Elements[elementIndex].transform.localScale * 100f;
             // this.currentElement = (GameObject)Instantiate (this.Elements[elementIndex], handModel.fingers[0].GetTipPosition(), Quaternion.identity);
-           // this.currentElement.transform.localScale = this.currentElement.transform.localScale * 0.01f;
+            //this.currentElement.transform.localScale = this.currentElement.transform.localScale * 0.01f;
             this.currentElement.GetComponent<SphereCollider>().enabled = false;
             this.attackChanged = false;
 
 
-            Debug.Log("Spawn");
+            Debug.Log("Spawn ------------------------------------");
         }
     }
 

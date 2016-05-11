@@ -28,12 +28,6 @@ public class collidePlayer : MonoBehaviour
 			this.player.decrease(0.01f);
 
 			this.animator.SetTrigger(hitHash);
-
-			//Destroy (this.gameObject, 0.5f);
-
-			/*this.gameObject.transform.position = new Vector3(this.gameObject.transform.position.x, 
-			                                                 this.gameObject.transform.position.y-10,
-			                                                 this.gameObject.transform.position.z);*/
 			
 		}
 	}
@@ -57,8 +51,7 @@ public class collidePlayer : MonoBehaviour
 	{
 
 
-		if (gameController.isInIntroState ())
-			return;
+		if (gameController.isInIntroState ()) return;
 
 		this.position = this.gameObject.transform.position;
 
