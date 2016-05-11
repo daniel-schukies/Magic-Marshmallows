@@ -16,7 +16,7 @@ namespace Leap.Unity{
     private const float PALM_RADIUS = 0.015f;
   
     private static int _colorIndex = 0;
-    private static Color[] _colorList = { Color.blue, Color.green, Color.magenta, Color.cyan, Color.red, Color.yellow };
+    private static Color[] _colorList = { Color.black, Color.grey, Color.magenta, Color.cyan, Color.red, Color.yellow };
   
     [SerializeField]
     private bool _showArm = true;

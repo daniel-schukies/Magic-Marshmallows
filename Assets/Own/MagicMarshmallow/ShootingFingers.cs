@@ -155,16 +155,6 @@ public class ShootingFingers : MonoBehaviour
                return;
             }
 
-            // ------------ Shoot Delay ------------
-            if (this.currentElement != null && !this.loadingShoot)
-            {
-                this.GetComponent<AudioSource>().Play();
-                this.loadingShoot = true;
-
-                Debug.Log("Play Audio Shoot");
-            }
-            // ------------ END Shoot Delay ------------
-
 
             // ------------ Switch Element ------------
             if (this.elementSwitchDelay <= 0f)
@@ -189,6 +179,19 @@ public class ShootingFingers : MonoBehaviour
                 Debug.Log("Switch blocked");
             }
             // ------------ END Switch Element ------------
+
+
+
+            // ------------ Shoot Delay ------------
+            if (this.currentElement != null && !this.loadingShoot)
+            {
+                this.GetComponent<AudioSource>().Play();
+                this.loadingShoot = true;
+
+                Debug.Log("Play Audio Shoot");
+            }
+            // ------------ END Shoot Delay ------------
+
 
         }
 

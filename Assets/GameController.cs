@@ -83,6 +83,7 @@ public class GameController : MonoBehaviour
 		inIntroState = false;
 
 		this.youLose.SetActive (false);
+        this.youWin.SetActive(false);
 	}
 
 	// Update is called once per frame
