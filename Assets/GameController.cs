@@ -24,6 +24,14 @@ public class GameController : MonoBehaviour
 		pivot.GetComponent<rotate> ().enabled = false;
 		this.Enemy.SetActive (false);
 		this.youLose.SetActive (false);
+
+        for (int i = 0; i < this.GetComponents<AudioSource>().Length; i++)
+        {
+            this.GetComponents<AudioSource>()[i].Stop();
+        }
+
+
+        this.GetComponents<AudioSource>()[Random.Range(0, this.GetComponents<AudioSource>().Length)].Play();
 	}
 
 	public bool isInIntroState(){
@@ -47,6 +55,15 @@ public class GameController : MonoBehaviour
 
 
 		this.inIntroState = true;
+
+
+        for (int i = 0; i < this.GetComponents<AudioSource>().Length; i++)
+        {
+            this.GetComponents<AudioSource>()[i].Stop();
+        }
+
+
+        this.GetComponents<AudioSource>()[Random.Range(0, this.GetComponents<AudioSource>().Length)].Play();
 	}
 
 
@@ -84,6 +101,9 @@ public class GameController : MonoBehaviour
 
 		this.youLose.SetActive (false);
         this.youWin.SetActive(false);
+
+
+
 	}
 
 	// Update is called once per frame
