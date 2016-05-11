@@ -29,6 +29,8 @@ public class ShootingFingers : MonoBehaviour
     private Hand CurrentHand;
     private bool IsHandActive;
 
+    private int HandIndex = -1;
+
 
     private bool HandActive;
 
@@ -40,6 +42,8 @@ public class ShootingFingers : MonoBehaviour
     {
         gameController = GameObject.Find("GameController").GetComponent<GameController>();
         this.elementSwitchDelay = 0f;
+
+        HandIndex = -1;
 
         controller = new Controller();
         loadingShoot = false;
@@ -73,14 +77,20 @@ public class ShootingFingers : MonoBehaviour
         // ------------ Check Gesture ------------
         for (int i = 0; i < frame.Hands.Count; i++ )
         {
-            if (frame.Hands[0].PalmVelocity.Magnitude > GestureAcceleration)
+            if (frame.Hands[i].PalmVelocity.Magnitude > GestureAcceleration)
             {
                 ActiveGesture = true;
+                
+                HandIndex = i;
 
-                // if(!IsHandActive)
-                CurrentHand = this.GetComponent<LeapServiceProvider>().CurrentFrame.Hands[0];
                 IsHandActive = true;
             }
+
+            if(HandIndex == i)
+            {
+                CurrentHand = this.GetComponent<LeapServiceProvider>().CurrentFrame.Hands[HandIndex];
+            }
+            
         }
 
         // ------------ Check Hand ------------
@@ -89,11 +99,17 @@ public class ShootingFingers : MonoBehaviour
             this.CurrentHand = null;
         }
 
+        if(CurrentHand != null)
+        {
+        
+        }
+        
 
+        
         // ------------ Check SpawnPoint ------------
         if(this.currentElement != null)
         {
-            if(this.SpawnPoint == null)
+            if(this.SpawnPoint == null || frame.Hands.Count <= 0 || CurrentHand.IsLeft)
             {
                this.currentElement.SetActive(false);
             }
@@ -113,11 +129,16 @@ public class ShootingFingers : MonoBehaviour
 
 
         // ------------ Move Element  ------------
-        if (currentElement != null && SpawnPoint != null)
+        if (currentElement != null )
         {
-            currentElement.transform.position = SpawnPoint.transform.position;
+            currentElement.transform.position = GetIndexFinger(CurrentHand).TipPosition.ToVector3();
+            currentElement.transform.localPosition = new Vector3(currentElement.transform.localPosition.x, currentElement.transform.localPosition.y, currentElement.transform.localPosition.z);
             Debug.Log("Spawn Point: " + SpawnPoint.transform.position );
             Debug.Log("Current Element: " + currentElement.transform.position );
+        }
+        else
+        {
+            Debug.Log("Current element null");
         }
 
 
@@ -148,15 +169,12 @@ public class ShootingFingers : MonoBehaviour
             // ------------ Switch Element ------------
             if (this.elementSwitchDelay <= 0f)
             {
-
-
                 if (this.currentElement == null)
                 {
-                    this.spawnElement(0);
+                    this.spawnElement( Random.Range(0, 2) );
                 }
                 else
                 {
-
                     Destroy(this.currentElement);
                     elementIndex = elementIndex == 0 ? 1 : 0;
                     this.spawnElement(elementIndex);
@@ -164,7 +182,7 @@ public class ShootingFingers : MonoBehaviour
                     Debug.Log("Switch Element");
                 }
 
-                this.elementSwitchDelay = 5f;
+                this.elementSwitchDelay = 1f;
             }
             else
             {
@@ -182,7 +200,7 @@ public class ShootingFingers : MonoBehaviour
                 Vector3 shootDirection = GetIndexFinger(CurrentHand).Direction.ToVector3();
 
                 Debug.Log("SHOOT");
-                this.shootElement(this.SpawnPoint.transform.forward);
+                this.shootElement(shootDirection);//this.SpawnPoint.transform.forward
                 this.loadingShoot = false;
             }
         }
@@ -190,7 +208,6 @@ public class ShootingFingers : MonoBehaviour
         if (fireDelay < 0.0f && currentElement != null)
         {
            //this.shootElement(shootDirection);
-           // Debug.Log("shoot");
         }
     }
 
@@ -203,15 +220,10 @@ public class ShootingFingers : MonoBehaviour
         }
         else
         {
-
-            this.Elements[elementIndex].transform.localScale = this.Elements[elementIndex].transform.localScale * 0.01f;
-            this.currentElement = (GameObject)Instantiate(this.Elements[elementIndex], SpawnPoint.transform.position, Quaternion.identity);
-            this.Elements[elementIndex].transform.localScale = this.Elements[elementIndex].transform.localScale * 100f;
-            // this.currentElement = (GameObject)Instantiate (this.Elements[elementIndex], handModel.fingers[0].GetTipPosition(), Quaternion.identity);
-            //this.currentElement.transform.localScale = this.currentElement.transform.localScale * 0.01f;
+            this.currentElement = (GameObject)Instantiate(this.Elements[elementIndex], GetIndexFinger(this.CurrentHand).TipPosition.ToVector3(), Quaternion.identity);
+            this.currentElement.transform.localScale = this.currentElement.transform.localScale * 0.015f;
             this.currentElement.GetComponent<SphereCollider>().enabled = false;
             this.attackChanged = false;
-
 
             Debug.Log("Spawn ------------------------------------");
         }
@@ -238,16 +250,10 @@ public class ShootingFingers : MonoBehaviour
 
         ballBig.tag = "Attack";
 
-
         currentElement = null;
 
         ballBig.GetComponent<timeDistanceScale>().setActive();
 
-        //shootDirection = new Vector3(shootDirection.x, shootDirection.y, shootDirection.z);
-
-
-        // Add a rigidbody in order to add forces to it later and get a reference to it
-        //Rigidbody rigid = theBall.AddComponent<Rigidbody>();	
         Rigidbody rigid = ballBig.GetComponent<Rigidbody>();
 
         // convert the local direction "forward" of this gameobject to world space
@@ -262,6 +268,5 @@ public class ShootingFingers : MonoBehaviour
     private void OnDestroy()
     {
         Destroy(this.currentElement);
-        //print("Script was destroyed");
     }
 }

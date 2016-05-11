@@ -9,6 +9,7 @@ public class GameController : MonoBehaviour
 	public GameObject pivot;
 	public GameObject Player;
 	public GameObject youLose;
+    public GameObject youWin;
 	private bool inIntroState = true;
 
 
@@ -56,9 +57,13 @@ public class GameController : MonoBehaviour
 			this.setLose();
 
 			this.youLose.SetActive (true);
+            this.youWin.SetActive(false);
 		} 
 		else 
 		{
+            this.youLose.SetActive(false);
+            this.youWin.SetActive(true);
+
 			this.setLose();
 
 
