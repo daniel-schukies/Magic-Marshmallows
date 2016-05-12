@@ -11,6 +11,10 @@ public class GameController : MonoBehaviour
 	public GameObject youLose;
     public GameObject youWin;
 	private bool inIntroState = true;
+    private bool ready;
+
+    private Vector3 startPosition;
+
 
 
 	private Vector3 pPosition;
@@ -19,6 +23,7 @@ public class GameController : MonoBehaviour
 	// Use this for initialization
 	void Start () 
 	{
+        this.ready = false;
 		this.pPosition = this.pivot.transform.position;
 		this.pRotation = this.pivot.transform.rotation;
 		pivot.GetComponent<rotate> ().enabled = false;
@@ -53,8 +58,13 @@ public class GameController : MonoBehaviour
 		this.Player.transform.position = new Vector3 (this.Player.transform.position.x, this.pivot.transform.position.y, this.Player.transform.position.z);
 
 
+        this.Enemy.GetComponent<collidePlayer>().spawnPoint.transform.position = this.Enemy.transform.position;
+        this.Player.GetComponent<collidePlayer>().spawnPoint.transform.position = this.Player.transform.position;
+
+
 
 		this.inIntroState = true;
+        this.ready = false;
 
         int PlayIndex = 0;
 
@@ -108,33 +118,57 @@ public class GameController : MonoBehaviour
 	public void startGame(){
 
 		this.pivot.transform.position = this.pivot.transform.position + new Vector3 (0,10,0);
-		this.Enemy.SetActive (true);
-		this.Enemy.GetComponent<collidePlayer> ().setStartHeight ();
-		this.Player.GetComponent<collidePlayer> ().setStartHeight ();
+        this.ready = true;
 
-		this.Intro.SetActive (false);
-		pivot.GetComponent<rotate> ().enabled = true;
-		inIntroState = false;
+        this.startPosition = this.pivot.transform.position;
 
-		this.youLose.SetActive (false);
+        this.Enemy.SetActive(true);
+        this.Enemy.GetComponent<collidePlayer>().setStartHeight();
+        this.Player.GetComponent<collidePlayer>().setStartHeight();
+
+        this.Intro.SetActive(false);
+        pivot.GetComponent<rotate>().enabled = true;
+        inIntroState = false;
+
+        this.youLose.SetActive(false);
         this.youWin.SetActive(false);
-
-
 
 	}
 
 	// Update is called once per frame
 	void Update () 
 	{
-		if (this.inIntroState)
-			return;
+        if (inIntroState)
+            return;
+        /*
+        if (ready && inIntroState)
+        {
+            this.pivot.transform.position = Vector3.Lerp(this.pivot.transform.position, startPosition + new Vector3(0, 5, 0), 10 * Time.deltaTime);
 
-		if(this.Player.transform.position.y < this.pPosition.y)
+            if (this.pivot.transform.position.y >= (startPosition + new Vector3(0, 5, 0)).y)
+            {
+
+                this.Enemy.SetActive(true);
+                this.Enemy.GetComponent<collidePlayer>().setStartHeight();
+                this.Player.GetComponent<collidePlayer>().setStartHeight();
+
+                this.Intro.SetActive(false);
+                pivot.GetComponent<rotate>().enabled = true;
+                inIntroState = false;
+
+                this.youLose.SetActive(false);
+                this.youWin.SetActive(false);
+            }
+        }
+            */
+
+
+        if (this.Player.transform.position.y < -11.14)
 		{
 			this.setLose("Player");
 		}
 
-		if(this.Enemy.transform.position.y < this.pPosition.y)
+        if (this.Enemy.transform.position.y < -11.14)
 		{
 			this.setLose("Enemy");
 		}
