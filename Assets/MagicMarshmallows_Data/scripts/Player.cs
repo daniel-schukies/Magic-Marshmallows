@@ -1,4 +1,12 @@
-﻿using UnityEngine;
+﻿/** 
+ * 
+ * Copyright © 2016 by Daniel Schukies 
+ * 
+ * **/
+
+
+
+using UnityEngine;
 using System.Collections;
 
 public class Player 

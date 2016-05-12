@@ -1,4 +1,13 @@
-﻿using UnityEngine;
+﻿/** 
+ * 
+ * Copyright © 2016 by Daniel Schukies 
+ * 
+ * **/
+
+
+
+
+using UnityEngine;
 using System.Collections;
 using Leap.Unity;
 using Leap;
@@ -12,26 +21,19 @@ public class ShootingFingers : MonoBehaviour
     public GameObject aBall;
     public GameObject smallBall;
     public int force;
-    //private GameObject ballBig;
+
     private GameObject currentElement;
     private Hand handModel;
     private int elementIndex = 0;
     bool attackChanged;
-
     private float fireDelay;
     private float startFireDelay = 5;
     private float elementSwitchDelay;
-
     private bool loadingShoot;
-
     private Leap.Controller controller;
-
     private Hand CurrentHand;
     private bool IsHandActive;
-
     private int HandIndex = -1;
-
-
     private bool HandActive;
 
     public int GestureAcceleration = 1100;
@@ -99,14 +101,8 @@ public class ShootingFingers : MonoBehaviour
         if(frame.Hands.Count <= 0)
         {
             this.CurrentHand = null;
-            //this.currentElement = null;
         }
-
-        if(CurrentHand != null)
-        {
-        
-        }
-        
+       
 
         
         // ------------ Check SpawnPoint ------------
@@ -120,7 +116,7 @@ public class ShootingFingers : MonoBehaviour
             else
             {
                 this.currentElement.SetActive(true);
-                //if (this.CurrentHand.IsRight != this.GetComponent<LeapServiceProvider>().CurrentFrame.Hands[0].IsRight && frame.Hands.Count == 1)
+
                 if(this.CurrentHand == null)
                 {
                     this.currentElement.SetActive(false);
@@ -225,7 +221,6 @@ public class ShootingFingers : MonoBehaviour
 
     private void spawnElement(int elementIndex)
     {
-        Debug.Log("spawnElement function");
         if (this.Elements.Length <= 0)
         {
             Debug.Log("element index: " + elementIndex + "Length: " + this.Elements.Length);
@@ -237,7 +232,7 @@ public class ShootingFingers : MonoBehaviour
             this.currentElement.GetComponent<SphereCollider>().enabled = false;
             this.attackChanged = false;
 
-            Debug.Log("Spawn ------------------------------------");
+            Debug.Log("Spawn Element");
         }
     }
 
