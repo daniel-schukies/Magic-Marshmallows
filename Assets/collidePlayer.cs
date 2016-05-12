@@ -29,6 +29,11 @@ public class collidePlayer : MonoBehaviour
     public GameObject spawnPoint;
 
     public bool reg = false;
+    public bool blockRotation = false;
+
+    private bool delayCorrection = false;
+
+    private Vector3 StartSpawnPosition;
 
 	private Animator animator;
 	private int hitHash = Animator.StringToHash("HitTrigger");
@@ -46,10 +51,6 @@ public class collidePlayer : MonoBehaviour
             this.player.decrease(ReceiveDamage);
 
 			this.animator.SetTrigger(hitHash);
-
-
-
-			
 		}
 	}
 
@@ -64,9 +65,14 @@ public class collidePlayer : MonoBehaviour
 		animator = GetComponent<Animator>();
         this.player = new Player(PlayerLifeHeight);
 		setStartHeight ();
-
+        StartSpawnPosition = this.spawnPoint.transform.position;
         this.startPostion = this.transform.localPosition;
 	}
+
+    public void resetSpawnPosition()
+    {
+        this.spawnPoint.transform.position = StartSpawnPosition;
+    }
 
 	public void setStartHeight(){
 		this.startHeight = this.gameObject.transform.position.y;
@@ -101,9 +107,16 @@ public class collidePlayer : MonoBehaviour
                     Debug.Log("DodgeZ -------------------< " + DodgeZ);
                 }
             }
-            this.GetComponent<Rigidbody>().velocity = Vector3.zero;
-            this.GetComponent<Rigidbody>().angularVelocity = Vector3.zero;
-    
+            this.delayCorrection = !this.delayCorrection;
+
+            if (!delayCorrection)
+            {
+                this.GetComponent<Rigidbody>().velocity = Vector3.zero;
+                this.GetComponent<Rigidbody>().angularVelocity = Vector3.zero;
+            }
+
+            
+
 
            // this.transform.position = this.spawnPoint.transform.position;
             //this.transform.rotation = this.spawnPoint.transform.rotation;
@@ -159,8 +172,20 @@ public class collidePlayer : MonoBehaviour
 
             Debug.Log("Position: " + this.transform.position + " Cube Position " + spawnPoint.transform.position);
 
-            this.transform.rotation = newRoation;
-            this.transform.position = newPosition;
+            if (!this.delayCorrection)
+            {
+                if (blockRotation)
+                {
+                    newRoation = Quaternion.Lerp(this.transform.rotation, this.spawnPoint.transform.rotation, 100 * Time.deltaTime);
+                    this.transform.rotation = this.spawnPoint.transform.rotation;
+                }
+                else
+                {
+                    this.transform.rotation = newRoation;
+                }
+
+                this.transform.position = newPosition;
+            }
         }
 
 

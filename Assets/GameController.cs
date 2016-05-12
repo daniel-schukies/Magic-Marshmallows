@@ -58,8 +58,11 @@ public class GameController : MonoBehaviour
 		this.Player.transform.position = new Vector3 (this.Player.transform.position.x, this.pivot.transform.position.y, this.Player.transform.position.z);
 
 
-        this.Enemy.GetComponent<collidePlayer>().spawnPoint.transform.position = this.Enemy.transform.position;
-        this.Player.GetComponent<collidePlayer>().spawnPoint.transform.position = this.Player.transform.position;
+     //   this.Enemy.GetComponent<collidePlayer>().spawnPoint.transform.position = this.Enemy.transform.position;
+      //  this.Player.GetComponent<collidePlayer>().spawnPoint.transform.position = this.Player.transform.position;
+
+        this.Enemy.GetComponent<collidePlayer>().resetSpawnPosition();
+        this.Player.GetComponent<collidePlayer>().resetSpawnPosition();
 
 
 
@@ -163,12 +166,12 @@ public class GameController : MonoBehaviour
             */
 
 
-        if (this.Player.transform.position.y < -11.14)
+        if (this.Player.transform.position.y < 70f)
 		{
 			this.setLose("Player");
 		}
 
-        if (this.Enemy.transform.position.y < -11.14)
+        if (this.Enemy.transform.position.y < 70f)
 		{
 			this.setLose("Enemy");
 		}
