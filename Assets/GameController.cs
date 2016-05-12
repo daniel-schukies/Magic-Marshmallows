@@ -56,14 +56,31 @@ public class GameController : MonoBehaviour
 
 		this.inIntroState = true;
 
+        int PlayIndex = 0;
 
         for (int i = 0; i < this.GetComponents<AudioSource>().Length; i++)
         {
+            if(this.GetComponents<AudioSource>()[i].isPlaying)
+            {
+                PlayIndex = i;
+            }
             this.GetComponents<AudioSource>()[i].Stop();
         }
 
 
-        this.GetComponents<AudioSource>()[Random.Range(0, this.GetComponents<AudioSource>().Length)].Play();
+
+
+        int NextPlay = Random.Range(0, this.GetComponents<AudioSource>().Length);
+        if (this.GetComponents<AudioSource>().Length > 1)
+        {
+            while ( NextPlay != PlayIndex)
+            {
+                NextPlay = Random.Range(0, this.GetComponents<AudioSource>().Length);
+            }
+
+            this.GetComponents<AudioSource>()[NextPlay].Play();
+        }
+
 	}
 
 

@@ -4,13 +4,22 @@ using System.Collections;
 public class Player 
 {
 	private float _life;
+    private float startLife;
 
 	private bool isAlive; 
 
 	public Player()
 	{
+        
 		this.life = 1.0f;
+        this.startLife = life;
 	}
+
+    public Player(float life)
+    {
+        this.startLife = life;
+        this.life = life;
+    }
 
 	public float life
 	{
@@ -20,7 +29,7 @@ public class Player
 
 	public void reset()
 	{
-		this.life = 1.0f;
+		this.life = this.startLife;
 	}
 
 	public void increase(float addLife)

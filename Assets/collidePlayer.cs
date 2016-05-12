@@ -7,10 +7,13 @@ public class collidePlayer : MonoBehaviour
 	private float startHeight;
 	private Vector3 position;
 	public float fallSpeed;
+    public float PlayerLifeHeight = 1.0f;
+    public float ReceiveDamage = 0.01f;
 
 	public AudioClip[] hitSounds;
 
 	public string dmgColliderTag;
+
 
 	private Animator animator;
 	private int hitHash = Animator.StringToHash("HitTrigger");
@@ -22,10 +25,10 @@ public class collidePlayer : MonoBehaviour
 			Debug.Log("Enemy Collision 2");
 
 			AudioSource source = GetComponent<AudioSource>();
-			source.clip = hitSounds[Random.Range(0,hitSounds.Length-1)];
+			source.clip = hitSounds[Random.Range(0,hitSounds.Length)];
 			source.Play();
 
-			this.player.decrease(0.01f);
+            this.player.decrease(ReceiveDamage);
 
 			this.animator.SetTrigger(hitHash);
 			
@@ -37,7 +40,7 @@ public class collidePlayer : MonoBehaviour
 	{
 		gameController = GameObject.Find ("GameController").GetComponent<GameController>();
 		animator = GetComponent<Animator>();
-		this.player = new Player ();
+        this.player = new Player(PlayerLifeHeight);
 		setStartHeight ();
 	}
 

@@ -74,6 +74,8 @@ public class ShootingFingers : MonoBehaviour
             return;
         }
 
+        this.CurrentHand = null;
+
         // ------------ Check Gesture ------------
         for (int i = 0; i < frame.Hands.Count; i++ )
         {
@@ -97,6 +99,7 @@ public class ShootingFingers : MonoBehaviour
         if(frame.Hands.Count <= 0)
         {
             this.CurrentHand = null;
+            //this.currentElement = null;
         }
 
         if(CurrentHand != null)
@@ -109,13 +112,21 @@ public class ShootingFingers : MonoBehaviour
         // ------------ Check SpawnPoint ------------
         if(this.currentElement != null)
         {
-            if(this.SpawnPoint == null || frame.Hands.Count <= 0 || CurrentHand.IsLeft)
+            if( frame.Hands.Count <= 0 )
             {
                this.currentElement.SetActive(false);
+               this.GetComponent<AudioSource>().Stop();
             }
             else
             {
                 this.currentElement.SetActive(true);
+                //if (this.CurrentHand.IsRight != this.GetComponent<LeapServiceProvider>().CurrentFrame.Hands[0].IsRight && frame.Hands.Count == 1)
+                if(this.CurrentHand == null)
+                {
+                    this.currentElement.SetActive(false);
+                    this.GetComponent<AudioSource>().Stop();
+                }
+                
             }
         }
   
@@ -129,12 +140,10 @@ public class ShootingFingers : MonoBehaviour
 
 
         // ------------ Move Element  ------------
-        if (currentElement != null )
+        if (currentElement != null && CurrentHand != null )
         {
             currentElement.transform.position = GetIndexFinger(CurrentHand).TipPosition.ToVector3();
             currentElement.transform.localPosition = new Vector3(currentElement.transform.localPosition.x, currentElement.transform.localPosition.y, currentElement.transform.localPosition.z);
-            Debug.Log("Spawn Point: " + SpawnPoint.transform.position );
-            Debug.Log("Current Element: " + currentElement.transform.position );
         }
         else
         {
@@ -144,7 +153,7 @@ public class ShootingFingers : MonoBehaviour
 
 
 
-        if (ActiveGesture && ( this.CurrentHand != null ) && SpawnPoint != null )
+        if (ActiveGesture && ( this.CurrentHand != null ) )
         {
             // ------------ Intro ------------
             Debug.Log("enter Gesture");
@@ -196,7 +205,7 @@ public class ShootingFingers : MonoBehaviour
         }
 
         // ------------ Shoot ------------
-        if (!this.GetComponent<AudioSource>().isPlaying && this.loadingShoot)
+        if (!this.GetComponent<AudioSource>().isPlaying && this.loadingShoot )
         {
             if (CurrentHand != null)
             {

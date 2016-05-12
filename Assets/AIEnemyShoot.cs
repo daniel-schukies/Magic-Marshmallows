@@ -22,7 +22,7 @@ public class AIEnemyShoot : MonoBehaviour
 	//bool attackChanged;
 	
 	private float fireDelay;
-	private float startFireDelay = 6;
+	public float startFireDelay = 3;
 	private float elementSwitchDelay;
 
 	public float attackCollideMinDistance;
